@@ -27,7 +27,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String token = this.resolveTokenFromRequest(request);
 
-        // 토큰 유효성 검사
         if (StringUtils.hasText(token) && this.tokenProvider.validateToken(token)) {
             Authentication auth = this.tokenProvider.getAuthentication(token);
             SecurityContextHolder.getContext().setAuthentication(auth);
@@ -41,8 +40,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private String resolveTokenFromRequest(HttpServletRequest request) {
         String token = request.getHeader(TOKEN_HEADER);
 
-        // 토큰이 비어있지 않고, TOKEN_PREFIX로 시작 될 때
-        // 실제 토큰에 해당되는 값 저장
         if (!StringUtils.isEmpty(token) && token.startsWith(TOKEN_PREFIX)) {
             return token.substring(TOKEN_PREFIX.length());
         }

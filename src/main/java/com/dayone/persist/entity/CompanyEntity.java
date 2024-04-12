@@ -1,7 +1,6 @@
 package com.dayone.persist.entity;
 
 import com.dayone.model.Company;
-import com.dayone.persist.repository.CompanyRepository;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

@@ -47,7 +47,6 @@ public class YahooFinanceScraper implements Scraper{
                 }
 
                 String[] splits = txt.split(" ");
-//                String month = splits[0];
                 int month = Month.strToNumber(splits[0]);
                 int day = Integer.parseInt(splits[1].replace(",", ""));
                 int year = Integer.parseInt(splits[2]);
@@ -60,12 +59,10 @@ public class YahooFinanceScraper implements Scraper{
                 dividends.add(
                         new Dividend(LocalDateTime.of(year, month, day, 0, 0), dividend)
                 );
-//                System.out.println(year + "/" + month + "/" + day + " -> " + dividend);
             }
             scrapResult.setDividends(dividends);
 
         } catch (IOException e) {
-            // TODO:
             e.printStackTrace();
         }
 
@@ -77,7 +74,6 @@ public class YahooFinanceScraper implements Scraper{
         String url = String.format(SUMMARY_URL, ticker, ticker);
         try {
             Document document = Jsoup.connect(url).get();
-            // <title>3M Company (MMM) Stock Price, News, Quote &amp; History - Yahoo Finance</title>
             Element titleElement = document.getElementsByTag("title").get(0);
             String title = titleElement.text().split("\\(")[0].trim();
 

@@ -13,8 +13,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/company")
 @AllArgsConstructor
@@ -25,8 +23,7 @@ public class CompanyController {
 
     /**
      * 자동 완성 기능
-     *
-     * @param keyword 검색 키워
+     * @param keyword 검색 키워드
      * @return
      */
     @GetMapping("/autocomplete")
@@ -37,13 +34,13 @@ public class CompanyController {
 
     @GetMapping
     @PreAuthorize("hasRole('READ')")
-    public ResponseEntity<?> searchCompany(final Pageable pageable) {   // 페이지 값이 바뀌지 않기 위해 final
+    public ResponseEntity<?> searchCompany(final Pageable pageable) {
         Page<CompanyEntity> companies = this.companyService.getAllCompany(pageable);
         return ResponseEntity.ok(companies);
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('WRITE')")   // Company 관련 'WRITE' 권한이 있어야 쓰기 가능
+    @PreAuthorize("hasRole('WRITE')")
     public ResponseEntity<?> addCompany(@RequestBody Company request) {
         String ticker = request.getTicker().trim();
         if(ObjectUtils.isEmpty(ticker)) {
@@ -51,7 +48,6 @@ public class CompanyController {
         }
 
         Company company = this.companyService.save(ticker);
-        // 자동완성 기능 키워드에 등록
         this.companyService.addAutoCompleteKeyword(company.getName());
         return ResponseEntity.ok(company);
     }
@@ -66,8 +62,6 @@ public class CompanyController {
     }
 
     public void clearFinanceCache(String companyName) {
-        // TODO : clearFinanceCache
         this.redisCacheManager.getCache(CacheKey.KEY_FINANCE).evict(companyName);
-
     }
 }

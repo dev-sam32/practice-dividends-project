@@ -38,7 +38,6 @@ public class TokenProvider {
     @Value("${spring.jwt.secret}")
     private String secretKey;
 
-    // Jwt Update
     private SecretKey getSigningKey() {
         byte[] keyBytes = Decoders.BASE64.decode(this.secretKey);
         return Keys.hmacShaKeyFor(keyBytes);
@@ -56,9 +55,6 @@ public class TokenProvider {
      * @return
      */
     public String generateToken(String username, List<String> roles) {
-//        Jwts.claims().setSubject(username);
-//        Claims claims = Jwts.claims().subject(username).build();
-//        claims.put(KEY_ROLES, roles);
         Claims claims = Jwts.claims().subject(username).add(KEY_ROLES, roles).build();
 
         var now = new Date();
@@ -66,59 +62,23 @@ public class TokenProvider {
 
         return Jwts.builder()
                 .claims(claims)
-                .issuedAt(now)              // 토큰 생성 시간
-                .expiration(expiredTime)    // 토큰 만료 시간
-                .signWith(this.getSigningKey()) // 암호화 알고리즘, 비밀키
+                .issuedAt(now)
+                .expiration(expiredTime)
+                .signWith(this.getSigningKey())
                 .compact();
     }
-
-//    https://www.youtube.com/watch?v=EjrlN_OQVDQ&ab_channel=PhegonDev
-//
-//    /**
-//     * Jwt 토큰 발급(UserDetails 사용)
-//     * @param userDetails
-//     * @return
-//     */
-//    public String generateToken(UserDetails userDetails) {
-//        return Jwts.builder()
-//                .subject(userDetails.getUsername())
-//                .issuedAt(new Date(System.currentTimeMillis()))
-//                .expiration(new Date(System.currentTimeMillis() + TOKEN_EXPIRED_TIME))
-//                .signWith(this.getSigningKey())
-//                .compact();
-//    }
-
-
-//    /**
-//     * Jwt 리프레시 토큰 발급(UserDetails 사용)
-//     *
-//     * @param userDetails
-//     * @return
-//     */
-//    public String generateRefreshToken(HashMap<String, Object> claims, UserDetails userDetails) {
-//        return Jwts.builder()
-//                .claims(claims)
-//                .subject(userDetails.getUsername())
-//                .issuedAt(new Date(System.currentTimeMillis()))
-//                .expiration(new Date(System.currentTimeMillis() + TOKEN_EXPIRED_TIME))
-//                .signWith(this.getSigningKey())
-//                .compact();
-//    }
 
     public String getUsername(String token) {
         return this.parseClaims(token).getSubject();
     }
 
-    // 토큰이 비어있는지, 토큰 만료 시간을 넘지 않았는지 확인
     public boolean validateToken(String token) {
-        // str != null && !str.isBlank();
         if(!StringUtils.hasText(token)) return false;
 
         var claims = this.parseClaims(token);
         return !claims.getExpiration().before(new Date());
     }
 
-    // Updated Jwt
     private Claims parseClaims(String token) {
         try {
             return Jwts.parser()
@@ -127,7 +87,6 @@ public class TokenProvider {
                     .parseSignedClaims(token)
                     .getPayload();
         } catch (ExpiredJwtException e) {
-            // TODO : 추후 예외처리 추가
             return e.getClaims();
         }
     }

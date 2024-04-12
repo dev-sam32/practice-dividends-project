@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -25,13 +24,13 @@ public class FinanceService {
     private final CompanyRepository companyRepository;
     private final DividendRepository dividendRepository;
 
-    @Cacheable(key = "#companyName", value = CacheKey.KEY_FINANCE) // '@Cacheable' 은 캐시에 데이터가 없을 경우에 등록을, 있다면 버로 반환
+    @Cacheable(key = "#companyName", value = CacheKey.KEY_FINANCE)
     public ScrapedResult getDividendByCompanyName(String companyName) {
         log.info("Search company -> " + companyName);
-        // 회사명으로 회사 정보 조회
+
         CompanyEntity company = this.companyRepository.findByName(companyName)
-                                                        .orElseThrow(NoCompanyException::new); // 오류 발생시 핸들링(옵셔널 벗겨낼 필요없어짐)
-        // 조회 된 회사 ID로 배당금 조회
+                                                        .orElseThrow(NoCompanyException::new);
+
         List<DividendEntity> dividendEntities = this.dividendRepository.findAllByCompanyId(company.getId());
 
         List<Dividend> dividends = new ArrayList<>();
@@ -39,7 +38,6 @@ public class FinanceService {
             dividends.add(new Dividend(entity.getDate(), entity.getDividend()));
         }
 
-        // 결과 조합 후 반환
         return new ScrapedResult(new Company(company.getTicker(), company.getName()), dividends);
     }
 }

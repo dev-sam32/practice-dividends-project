@@ -1,7 +1,6 @@
 package com.dayone.exception.impl;
 
 import com.dayone.exception.AbstractException;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 
 public class NoCompanyException extends AbstractException {

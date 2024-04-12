@@ -31,10 +31,8 @@ public class MemberService implements UserDetailsService {
             throw new AlreadyExistUserException();
         }
 
-        // 패스워드 암호화
         member.setPassword(this.passwordEncoder.encode(member.getPassword()));
 
-        // toEntity() 후 저장
         return this.memberRepository.save(member.toEntity());
     }
 

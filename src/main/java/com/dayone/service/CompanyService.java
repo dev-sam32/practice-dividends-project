@@ -42,22 +42,22 @@ public class CompanyService {
     }
 
     private Company storeCompanyAndDividend(String ticker) {
-        // ticker를 통한 회사정보 스크래핑
         Company company = this.yahooFinanceScraper.scrapCompanyByTicker(ticker);
 
         if (ObjectUtils.isEmpty(company)) {
             throw new RuntimeException("failed to scrap ticker -> " + ticker);
         }
-        // 해당 회사가 존재한다면, 회사 배당금 정보 스크래핑
+
         ScrapedResult scrapedResult = this.yahooFinanceScraper.scrap(company);
 
-        // 스크래핑 결과
         CompanyEntity companyEntity = this.companyRepository.save(new CompanyEntity(company));
+
         List<DividendEntity> dividendEntities = scrapedResult.getDividends().stream()
                 .map(e -> new DividendEntity(companyEntity.getId(), e))
                 .toList();
 
         this.dividendRepository.saveAll(dividendEntities);
+
         return company;
     }
 
